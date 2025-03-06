@@ -8,7 +8,7 @@ import { verifyToken } from "@/lib/auth";
 import UserInfo from "./UserInfo";
 
 async function getUserFromToken() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();  // Await cookies() here
   const token = cookieStore.get("token");
 
   if (!token?.value) return null; // Ensure we have a token
@@ -21,8 +21,20 @@ async function getUserFromToken() {
   }
 }
 
+async function getAssetById(id) {
+  // Simulating an async asset fetch (could be from a database or API)
+  return new Promise((resolve, reject) => {
+    const asset = assets.find((item) => item?.id === id);
+    if (asset) resolve(asset);
+    else reject("Asset not found");
+  });
+}
+
 export default async function Page({ params }) {
-  if (!params || !params.id) {
+  // Await the params object if necessary
+  const { id } = await params;
+
+  if (!id) {
     return notFound(); // Handle missing params
   }
 
@@ -33,8 +45,13 @@ export default async function Page({ params }) {
 
   const safeUser = JSON.parse(JSON.stringify(user));
 
-  const asset = assets.find((item) => item?.id === params?.id);
-  if (!asset) return notFound();
+  // Fetch the asset asynchronously
+  let asset;
+  try {
+    asset = await getAssetById(id);
+  } catch (error) {
+    return notFound();
+  }
 
   return (
     <PageWrapper>
@@ -48,4 +65,3 @@ export default async function Page({ params }) {
     </PageWrapper>
   );
 }
-
