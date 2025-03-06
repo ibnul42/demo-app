@@ -10,6 +10,14 @@ import { assets } from "@/constant/helper";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
+function generateReceipt() {
+  const randomString = Math.random()
+    .toString(36)
+    .substring(2, 12)
+    .toUpperCase();
+  return `R-${randomString}`;
+}
+
 export default function Page() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -53,9 +61,11 @@ export default function Page() {
     const asset = assets[currentIndex];
 
     try {
+      const receiptNo = generateReceipt();
       const htmlContent = `
     <h1>Interested in ${asset.title}</h1>
-    <h2>User Details:</h2>
+    <h2>Receipt No: ${receiptNo}</h2>
+    <h3>User Details:</h3>
     <p><strong>Name:</strong> ${user.name}</p>
     <p><strong>Phone:</strong> ${user.phone}</p>
     <p><strong>Email:</strong> ${user.email}</p>
@@ -66,7 +76,7 @@ export default function Page() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user,
-          subject: `New Interest in ${asset.title}`,
+          subject: `New Interest in "${asset.title}"`,
           htmlContent,
         }),
       });
@@ -75,7 +85,9 @@ export default function Page() {
 
       if (result.success) {
         toast.success("Email sent successfully!");
-        router.push(`/receipt/${assets[currentIndex].id}`);
+        router.push(
+          `/receipt/${assets[currentIndex].id}?receiptNo=${receiptNo}`
+        );
       } else {
         toast.error("Failed to send email");
         setLoading(false);

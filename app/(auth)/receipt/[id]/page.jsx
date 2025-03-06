@@ -21,21 +21,29 @@ async function getUserFromToken() {
   }
 }
 
-export default async function Page({ params }) {
+export default async function Page({ params, searchParams }) {
   const user = await getUserFromToken();
   if (!user) {
     redirect("/signin"); // Redirect instead of showing 404
   }
 
   const asset = assets.find((item) => item.id === params.id);
-  if (!asset) return notFound(); // If asset not found, return 404 page
+  if (!asset) return notFound();
+
+  const receiptNo = searchParams?.receiptNo || "";
 
   return (
     <PageWrapper>
       <div className="flex flex-col gap-6">
         <TopHeader />
         <div className="w-80 h-auto min-h-80 py-8 px-2 bg-gray-200 flex flex-col gap-5 justify-center items-center">
-          <h2 className="text-xl font-bold text-gray-700">{asset.title}</h2>
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold text-gray-700">{asset.title}</h2>
+            <h3 className="text-lg font-bold text-gray-700">
+              {" "}
+              Receipt: {receiptNo}
+            </h3>
+          </div>
           <Image
             src={asset.src}
             alt={asset.title}
