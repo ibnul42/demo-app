@@ -16,7 +16,7 @@ export async function POST(req) {
 
     const data = await resend.emails.send({
       from: "Acme <onboarding@resend.dev>",
-      to: ["ibnulashir42@gmail.com"],
+      to: ["contact@the12councils.com"],
       subject,
       html: htmlContent,
     });
