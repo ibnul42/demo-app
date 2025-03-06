@@ -14,6 +14,8 @@ export default function ContactModal({ isOpen, onClose, onSend }) {
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (modalRef.current && !modalRef.current.contains(e.target)) {
+        setSubject("");
+        setMessage("");
         onClose(); // Close the modal if click is outside
       }
     };
@@ -56,7 +58,13 @@ export default function ContactModal({ isOpen, onClose, onSend }) {
     }
 
     try {
-      const htmlContent = `${message}`;
+      const htmlContent = `
+      <h3>User Details:</h3>
+    <p><strong>Name:</strong> ${user.name}</p>
+    <p><strong>Phone:</strong> ${user.phone}</p>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Address:</strong> ${user.address}</p>
+    <p><strong>Message:</strong> ${message}</p>`;
       const response = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -98,7 +106,7 @@ export default function ContactModal({ isOpen, onClose, onSend }) {
         <input
           type="text"
           placeholder="Subject"
-          className="w-full bg-white my-2 py-1 px-2 placeholder:text-gray-300 text-gray-300 outline-none"
+          className="w-full bg-white my-2 py-1 px-2 placeholder:text-gray-300 text-gray-600 outline-none"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
         />
@@ -106,7 +114,7 @@ export default function ContactModal({ isOpen, onClose, onSend }) {
         {/* Message Textarea */}
         <textarea
           placeholder="Message"
-          className="w-full bg-white my-2 py-1 px-2 placeholder:text-gray-300 text-gray-300 outline-none h-24"
+          className="w-full bg-white my-2 py-1 px-2 placeholder:text-gray-300 text-gray-600 outline-none h-24"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
@@ -115,7 +123,11 @@ export default function ContactModal({ isOpen, onClose, onSend }) {
         <div className="flex justify-end gap-3">
           <button
             disabled={loading}
-            onClick={onClose}
+            onClick={() => {
+              setSubject("");
+              setMessage("");
+              onClose();
+            }}
             className="bg-gray-300 hover:bg-gray-400 text-white px-2 py-2 text-xl cursor-pointer w-32 text-center"
           >
             Cancel
