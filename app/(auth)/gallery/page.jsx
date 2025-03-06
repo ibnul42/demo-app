@@ -7,7 +7,6 @@ import ContactButton from "@/components/ContactButton";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { assets } from "@/constant/helper";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -15,6 +14,7 @@ export default function Page() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchUser() {
@@ -23,9 +23,7 @@ export default function Page() {
         if (!res.ok) throw new Error("Failed to fetch user");
         const data = await res.json();
         setUser(data);
-      } catch (error) {
-        console.error(error);
-      }
+      } catch (error) {}
     }
     fetchUser();
   }, []);
@@ -43,34 +41,50 @@ export default function Page() {
   };
 
   const handleInterest = async (event) => {
+    setLoading(true);
     event.preventDefault();
-  
-    const formData = {
-      name: "ibnul",
-      email: "ibnul@example.com",
-      subject: "New Interest",
-      message: "I am interested in learning more about your website",
-    };
-  
+
+    if (!user) {
+      alert("User information is not available!");
+      setLoading(false);
+      return;
+    }
+
+    const asset = assets[currentIndex];
+
     try {
-      const res = await fetch("/api/send-email", {
+      const htmlContent = `
+    <h1>Interested in ${asset.title}</h1>
+    <h2>User Details:</h2>
+    <p><strong>Name:</strong> ${user.name}</p>
+    <p><strong>Phone:</strong> ${user.phone}</p>
+    <p><strong>Email:</strong> ${user.email}</p>
+    <p><strong>Address:</strong> ${user.address}</p>
+  `;
+      const response = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData), // Ensure this is sent
+        body: JSON.stringify({
+          user,
+          subject: `New Interest in ${asset.title}`,
+          htmlContent,
+        }),
       });
-  
-      const data = await res.json();
-      setResponse(data.message);
-      toast.success(data.message);
-    } catch (error) {
-      console.error("Error:", error);
-      setResponse("Something went wrong.");
-      toast.error("Failed to send email");
-    }
-    router.push(`/receipt/${assets[currentIndex].id}`);
-  };
-  
 
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success("Email sent successfully!");
+        router.push(`/receipt/${assets[currentIndex].id}`);
+      } else {
+        toast.error("Failed to send email");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Error sending email!");
+      setLoading(false);
+    }
+  };
 
   return (
     <PageWrapper>
@@ -115,20 +129,12 @@ export default function Page() {
           <div className="flex justify-center">
             <button
               onClick={handleInterest}
+              disabled={loading}
               className="bg-gray-300 hover:bg-gray-400 text-white px-2 py-1 text-xl cursor-pointer w-32 text-center uppercase"
             >
-              Interested
+              {loading ? "Sending..." : "Interested"}
             </button>
           </div>
-
-          {/* {user && (
-            <div className="w-full bg-gray-100 p-4 rounded-md">
-              <p className="text-gray-600 text-sm">Name: {user.name}</p>
-              <p className="text-gray-600 text-sm">Phone: {user.phone}</p>
-              <p className="text-gray-600 text-sm">Email: {user.email}</p>
-              <p className="text-gray-600 text-sm">Address: {user.address}</p>
-            </div>
-          )} */}
         </div>
 
         <div className="flex justify-center">
