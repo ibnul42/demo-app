@@ -17,10 +17,10 @@ export default function page() {
     async function fetchUser() {
       try {
         const res = await fetch("/api/user");
+        if (!res.ok) throw new Error("Failed to fetch user");
         const data = await res.json();
         setUser(data);
-      } catch (error) {
-      }
+      } catch (error) {}
     }
     fetchUser();
   }, []);
