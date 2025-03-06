@@ -5,7 +5,7 @@ import TopHeader from "@/components/TopHeader";
 import ContactButton from "@/components/ContactButton";
 import { assets } from "@/constant/helper";
 import { verifyToken } from "@/lib/auth";
-import Image from "next/image";
+import UserInfo from "./UserInfo";
 
 async function getUserFromToken() {
   const cookieStore = cookies();
@@ -21,43 +21,26 @@ async function getUserFromToken() {
   }
 }
 
-export default async function Page({ params, searchParams }) {
-  const user = await getUserFromToken();
-  if (!user) {
-    redirect("/signin"); // Redirect instead of showing 404
+export default async function Page({ params }) {
+  if (!params || !params.id) {
+    return notFound(); // Handle missing params
   }
 
-  const asset = assets.find((item) => item.id === params.id);
-  if (!asset) return notFound();
+  const user = await getUserFromToken();
+  if (!user) {
+    redirect("/signin");
+  }
 
-  const receiptNo = searchParams?.receiptNo || "";
+  const safeUser = JSON.parse(JSON.stringify(user));
+
+  const asset = assets.find((item) => item?.id === params?.id);
+  if (!asset) return notFound();
 
   return (
     <PageWrapper>
       <div className="flex flex-col gap-6">
         <TopHeader />
-        <div className="w-80 h-auto min-h-80 py-8 px-2 bg-gray-200 flex flex-col gap-5 justify-center items-center">
-          <div className="space-y-2">
-            <h2 className="text-xl font-bold text-gray-700">{asset.title}</h2>
-            <h3 className="text-lg font-bold text-gray-700">
-              {" "}
-              Receipt: {receiptNo}
-            </h3>
-          </div>
-          <Image
-            src={asset.src}
-            alt={asset.title}
-            width={320}
-            height={160}
-            className="w-full h-auto max-h-40 object-cover rounded-md"
-          />
-          <div className="w-full">
-            <p className="text-gray-600 text-sm">Name: {user.name}</p>
-            <p className="text-gray-600 text-sm">Phone: {user.phone}</p>
-            <p className="text-gray-600 text-sm">Email: {user.email}</p>
-            <p className="text-gray-600 text-sm">Address: {user.address}</p>
-          </div>
-        </div>
+        <UserInfo user={safeUser} asset={asset} />
         <div className="flex justify-center">
           <ContactButton />
         </div>
@@ -65,3 +48,4 @@ export default async function Page({ params, searchParams }) {
     </PageWrapper>
   );
 }
+
