@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/auth";
 
 export async function GET() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies(); // ✅ Await cookies()
   const token = cookieStore.get("token");
 
   if (!token) {

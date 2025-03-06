@@ -45,28 +45,28 @@ export default function Page() {
   const handleInterest = async (event) => {
     event.preventDefault();
   
-    // const formData = {
-    //   name: "ibnul",
-    //   email: "ibnul@example.com",
-    //   subject: "New Interest",
-    //   message: "I am interested in learning more about your website",
-    // };
+    const formData = {
+      name: "ibnul",
+      email: "ibnul@example.com",
+      subject: "New Interest",
+      message: "I am interested in learning more about your website",
+    };
   
-    // try {
-    //   const res = await fetch("/api/send-email", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(formData), // Ensure this is sent
-    //   });
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData), // Ensure this is sent
+      });
   
-    //   const data = await res.json();
-    //   setResponse(data.message);
-    //   toast.success(data.message);
-    // } catch (error) {
-    //   console.error("Error:", error);
-    //   setResponse("Something went wrong.");
-    //   toast.error("Failed to send email");
-    // }
+      const data = await res.json();
+      setResponse(data.message);
+      toast.success(data.message);
+    } catch (error) {
+      console.error("Error:", error);
+      setResponse("Something went wrong.");
+      toast.error("Failed to send email");
+    }
     router.push(`/receipt/${assets[currentIndex].id}`);
   };
   
