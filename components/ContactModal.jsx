@@ -38,6 +38,7 @@ export default function ContactModal({ isOpen, onClose, onSend }) {
         if (!res.ok) throw new Error("Failed to fetch user");
         const data = await res.json();
         setUser(data);
+        localStorage.setItem("user", JSON.stringify(data));
       } catch (error) {}
     }
     fetchUser();

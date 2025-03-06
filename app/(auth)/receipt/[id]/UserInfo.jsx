@@ -3,33 +3,22 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
-export default function UserInfo({ user: initialUser, asset }) {
+export default function UserInfo({ asset }) {
   const searchParams = useSearchParams();
-  const [user, setUser] = useState(initialUser);
-  const [loading, setLoading] = useState(!initialUser);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const receiptNo = searchParams.get("receiptNo");
 
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        setLoading(true);
-        const res = await fetch("/api/user", { cache: "no-store" });
-        console.log(res);
-        if (!res.ok) throw new Error("Failed to fetch user");
-        const data = await res.json();
-        setUser(data);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      } finally {
-        setLoading(false);
-      }
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
 
-    if (!initialUser) {
-      fetchUser();
-    }
-  }, [initialUser]);
+    setLoading(false);
+  }, []);
 
   if (loading) {
     return (
