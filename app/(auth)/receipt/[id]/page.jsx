@@ -9,21 +9,36 @@ import { assets } from "@/constant/helper";
 
 export default function page() {
   const params = useParams();
-  const { id } = params;
+  const id  = params?.id;
   const [user, setUser] = useState(null);
   const [asset, setAsset] = useState(null);
+
+  // useEffect(() => {
+  //   async function fetchUser() {
+  //     try {
+  //       const res = await fetch("/api/user");
+  //       if (!res.ok) throw new Error("Failed to fetch user");
+  //       const data = await res.json();
+  //       setUser(data);
+  //     } catch (error) {}
+  //   }
+  //   fetchUser();
+  // }, []);
 
   useEffect(() => {
     async function fetchUser() {
       try {
         const res = await fetch("/api/user");
-        if (!res.ok) throw new Error("Failed to fetch user");
         const data = await res.json();
+        console.log("Fetched user data:", data); // Debugging
         setUser(data);
-      } catch (error) {}
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
     }
     fetchUser();
   }, []);
+  
 
   useEffect(() => {
     if (id) {

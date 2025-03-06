@@ -113,7 +113,7 @@ export default function Page() {
               className="w-full bg-gray-300 py-1 px-2 placeholder:text-white text-white outline-none"
             />
           </div>
-          <div className="">
+          <div>
             <button
               onClick={handleSubmit}
               className="bg-gray-300 hover:bg-gray-400 text-white px-2 py-2 text-xl cursor-pointer w-32 text-center uppercase"
