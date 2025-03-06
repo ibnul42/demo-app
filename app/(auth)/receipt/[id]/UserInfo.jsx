@@ -14,7 +14,8 @@ export default function UserInfo({ user: initialUser, asset }) {
     async function fetchUser() {
       try {
         setLoading(true);
-        const res = await fetch("/api/user");
+        const res = await fetch("/api/user", { cache: "no-store" });
+        console.log(res);
         if (!res.ok) throw new Error("Failed to fetch user");
         const data = await res.json();
         setUser(data);
